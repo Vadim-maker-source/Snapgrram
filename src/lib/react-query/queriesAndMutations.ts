@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
-import { CreatePost } from '@/_root/pages'
 import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
@@ -73,7 +72,7 @@ export const useSavePost = () => {
 
     return useMutation({
         mutationFn: ({ postId, userId }: { postId: string; userId: string }) => savePost(postId, userId),
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
             })
@@ -91,8 +90,8 @@ export const useDeleteSavedPost = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (savedRecordId) => deleteSavedPost(savedRecordId),
-        onSuccess: (data) => {
+        mutationFn: (savedRecordId: string) => deleteSavedPost(savedRecordId),
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
             })
@@ -195,4 +194,4 @@ export const useGetUsers = (limit?: number) => {
       queryKey: [QUERY_KEYS.GET_USERS],
       queryFn: () => getUsers(limit),
     });
-  };
+}

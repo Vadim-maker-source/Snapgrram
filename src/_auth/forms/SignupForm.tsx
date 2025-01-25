@@ -81,6 +81,12 @@ const SignupForm = () => {
       <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Create a new account</h2>
       <p className="text-light-3 small-medium md:base-regular mt-2">To use snapgram enter your details</p>
 
+      {isUserLoading && (
+          <div className="flex-center gap-2 mb-4">
+            <Loader /> Checking user status...
+          </div>
+      )}
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-full mt-4">
         <FormField
           control={form.control}
@@ -137,12 +143,13 @@ const SignupForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="shad-button_primary">{isCreatingAccount ? (
-          <div className="flex-center gap-2">
-            <Loader /> Loading...
-          </div>
-        ): "Sign up"}
-        </Button>
+        <Button type="submit" className="shad-button_primary">
+            {isCreatingAccount || isSigningIn ? (
+              <div className="flex-center gap-2">
+                <Loader /> Loading...
+              </div>
+            ) : "Sign up"}
+          </Button>
 
         <p className="text-small-regular text-light-2 text-center mt-2">
           Already have an account?

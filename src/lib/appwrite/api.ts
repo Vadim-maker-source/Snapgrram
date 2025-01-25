@@ -1,4 +1,4 @@
-import { ID, Query } from "appwrite";
+import { ID, ImageGravity, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
 import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
@@ -41,7 +41,7 @@ export async function saveUserToDB(user: {
   accountId: string;
   email: string;
   name: string;
-  imageUrl: URL;
+  imageUrl: string;
   username?: string;
 }) {
   try {
@@ -105,11 +105,11 @@ export async function createPost(post: INewPost) {
     const uploadedFile = await uploadFile(post.file[0]);
     if (!uploadedFile) throw new Error('File upload failed');
 
-    const fileUrl = await storage.getFileView(
+    const fileUrl = new URL(await storage.getFileView(
       appwriteConfig.storageId,
       uploadedFile.$id
-    );
-    if (!fileUrl || fileUrl.length > 2000) {
+    ));
+    if (!fileUrl || fileUrl.href.length > 2000) {
       await deleteFile(uploadedFile.$id);
       throw new Error('Invalid file URL');
     }
@@ -119,7 +119,7 @@ export async function createPost(post: INewPost) {
     const newPostData = {
       creator: post.userId,
       caption: post.caption,
-      imageUrl: fileUrl,
+      imageUrl: fileUrl.href,
       imageId: uploadedFile.$id,
       location: post.location,
       tags: tags,
@@ -168,7 +168,7 @@ export function getFilePreview(fileId: string){
       fileId,
       2000,
       2000,
-      "top",
+      ImageGravity.Top,
       100
     );
 
@@ -271,7 +271,6 @@ export async function getPostById(postId: string) {
 }
 
 export async function updatePost(post: IUpdatePost) {
-
   const hasFileToUpdate = post.file.length > 0;
 
   try {
@@ -280,28 +279,31 @@ export async function updatePost(post: IUpdatePost) {
       imageId: post.imageId,
     }
 
-    if(hasFileToUpdate){
+    if (hasFileToUpdate) {
       const uploadedFile = await uploadFile(post.file[0]);
 
-      if(!uploadedFile) throw Error;
+      if (!uploadedFile) throw Error;
 
-      const fileUrl = await storage.getFileView(
+      // Преобразуем полученную строку в объект URL
+      const fileUrl = new URL(await storage.getFileView(
         appwriteConfig.storageId,
         uploadedFile.$id
-      );
-      if (!fileUrl || fileUrl.length > 2000) {
+      ));
+
+      if (!fileUrl || fileUrl.href.length > 2000) {
         await deleteFile(uploadedFile.$id);
         throw new Error('Invalid file URL');
       }
 
-      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id}
+      // Присваиваем правильный тип
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
     }
 
     const tags = post.tags?.replace(/ /g, '').split(',') || [];
 
     const updatedPost = {
       caption: post.caption,
-      imageUrl: image.imageUrl,
+      imageUrl: image.imageUrl.href, // Теперь используем href, чтобы получить строку URL
       imageId: image.imageId,
       location: post.location,
       tags: tags,
@@ -321,10 +323,11 @@ export async function updatePost(post: IUpdatePost) {
 
     return newPost;
   } catch (error) {
-    console.error("Error in createPost:", error);
+    console.error("Error in updatePost:", error);
     throw error;
   }
 }
+
 
 export async function deletePost(postId: string, imageId: string){
   if(!postId || !imageId) throw Error;

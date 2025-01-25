@@ -30,31 +30,32 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const navigate = useNavigate();
 
-  const checkAuthUser = async () => {
+  const checkAuthUser = async (): Promise<boolean> => {
     try {
-      const currentAccount = await getCurrentUser();
-
-      if(currentAccount){
+      setIsLoading(true); // Начинаем загрузку, пока выполняется запрос.
+  
+      const currentAccount = await getCurrentUser(); // Получаем текущего пользователя.
+  
+      if (currentAccount) {
         setUser({
           id: currentAccount.$id,
           name: currentAccount.name,
           username: currentAccount.username,
           email: currentAccount.email,
           imageUrl: currentAccount.imageUrl,
-          bio: currentAccount.bio
-        })
+          bio: currentAccount.bio,
+        });
         
-        setIsAuthenticated(true);
-
-        return true;
+        setIsAuthenticated(true); // Если пользователь найден, ставим его как аутентифицированного.
+        return true; // Возвращаем true, если пользователь найден.
       }
-
-      return false;
+  
+      return false; // Если пользователь не найден, возвращаем false.
     } catch (error) {
-      console.log(error);
-      return error;
+      console.error("Error checking user:", error); // Логируем ошибку для отладки.
+      return false; // В случае ошибки, возвращаем false (неаутентифицирован).
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Завершаем загрузку.
     }
   };
 
