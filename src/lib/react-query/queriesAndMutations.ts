@@ -3,9 +3,10 @@ import {
     useMutation,
     useQueryClient,
     useInfiniteQuery,
+    //useInfiniteQuery,
 } from '@tanstack/react-query'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, /*getInfinitePosts,*/ getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
 import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
@@ -146,17 +147,24 @@ export const useDeletePost = () => {
 
 export const useGetPosts = () => {
     return useInfiniteQuery({
-        queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-        queryFn: getInfinitePosts,
-        getNextPageParam: (lastPage) => {
-            if(lastPage && lastPage.documents.length === 0) return null;
-
-            const lastId = lastPage?.documents[lastPage?.documents.length - 1].$id;
-
-            return lastId;
-        }
-    })
-}
+      queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+      queryFn: ({ pageParam = 1 }) => getInfinitePosts({ pageParam }), // Начинаем с первой страницы
+      getNextPageParam: (lastPage, allPages) => {
+        // Если на последней странице меньше, чем limit, значит больше страниц нет
+        if (!lastPage || lastPage.documents.length < 9) return null;
+  
+        // Получаем номер текущей страницы из allPages (все страницы, включая текущую)
+        const currentPage = allPages.length;
+  
+        // Переходим к следующей странице
+        return currentPage + 1; // Увеличиваем номер страницы на 1
+      },
+      initialPageParam: 1 // Начинаем с первой страницы
+    });
+  }
+  
+  
+  
 
 export const useSearchPosts = (searchTerm: string) => {
     return useQuery({

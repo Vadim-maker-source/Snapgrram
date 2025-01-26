@@ -345,27 +345,34 @@ export async function deletePost(postId: string, imageId: string){
   }
 }
 
-export async function getInfinitePosts({ pageParam }: { pageParam: number }){
-  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(10)]
+export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+  const limit = 9; // Количество постов на странице
+  const offset = pageParam ? (pageParam - 1) * limit : 0; // Рассчитываем смещение
 
-  if(pageParam){
-    queries.push(Query.cursorAfter(pageParam.toString()));
-  }
+  const queries: any[] = [
+    Query.orderDesc('$updatedAt'),
+    Query.limit(limit), // Ограничиваем количество постов на страницу
+    Query.offset(offset) // Указываем смещение для пагинации
+  ];
 
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
       queries
-    )
+    );
 
-    if(!posts) throw Error;
+    if (!posts || posts.documents.length === 0) {
+      throw new Error('No posts found');
+    }
 
     return posts;
   } catch (error) {
-    console.log(error)
+    console.error('Error fetching posts:', error);
+    throw error;
   }
 }
+
 
 export async function searchPosts(searchTerm: string){
   try {
