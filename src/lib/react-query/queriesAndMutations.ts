@@ -5,8 +5,8 @@ import {
     useInfiniteQuery,
     //useInfiniteQuery,
 } from '@tanstack/react-query'
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, /*getInfinitePosts,*/ getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
+import { INewComment, INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
+import { addComment, createPost, createUserAccount, deleteComment, deletePost, deleteSavedPost, getComments, getCurrentUser, getInfinitePosts, /*getInfinitePosts,*/ getPostById, getRecentPosts, getUserById, getUsers, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost, updateUser } from '../appwrite/api'
 import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
@@ -45,6 +45,48 @@ export const useGetRecentPosts = () => {
         queryFn: getRecentPosts,
     })
 }
+
+export const useGetComments = (postId: string) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.GET_COMMENTS, postId], // Ключ запроса для получения комментариев
+      queryFn: () => getComments(postId), // Исправленная функция получения комментариев
+      enabled: !!postId, // Запрос выполняется только если postId не пустое
+    });
+  };  
+
+  export const useAddComment = (postId: string, userId: string) => {
+    const queryClient = useQueryClient();
+  
+    return useMutation({
+      mutationFn: (comment: INewComment) => addComment(postId, userId, comment), // Исправленный порядок аргументов
+      onSuccess: () => {
+        // Инвалидируем запросы, чтобы обновить комментарии
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_COMMENTS, postId], // Обновляем комментарии для данного поста
+        });
+      },
+      onError: (error) => {
+        console.error('Error adding comment:', error);
+      },
+    });
+  };
+
+  export const useDeleteComment = () => {
+    const queryClient = useQueryClient();
+  
+    return useMutation({
+      mutationFn: (commentId: string) => deleteComment(commentId),
+      onSuccess: () => {
+        // Инвалидируем запросы, чтобы обновить список комментариев
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_COMMENTS], // Обновляем все комментарии
+        });
+      },
+      onError: (error) => {
+        console.error('Error deleting comment:', error);
+      },
+    });
+  };
 
 export const useLikePost = () => {
     const queryClient = useQueryClient();
@@ -163,9 +205,6 @@ export const useGetPosts = () => {
     });
   }
   
-  
-  
-
 export const useSearchPosts = (searchTerm: string) => {
     return useQuery({
         queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],

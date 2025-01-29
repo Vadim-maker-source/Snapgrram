@@ -30,6 +30,11 @@ export type INewPost = {
   tags?: string;
 };
 
+export type INewComment = {
+  userId: string;
+  textComment: string;
+}
+
 export type IUpdatePost = {
   postId: string;
   caption: string;

@@ -83,7 +83,7 @@ const Profile = () => {
                   height={20}
                 />
                 <p className="flex whitespace-nowrap small-medium">
-                  Edit Profile
+                  Измените профиль
                 </p>
               </Link>
             </div>
@@ -107,7 +107,7 @@ const Profile = () => {
               width={20}
               height={20}
             />
-            Posts
+            Публикации
           </Link>
           <Link
             to={`/profile/${id}/liked-posts`}
@@ -120,7 +120,7 @@ const Profile = () => {
               width={20}
               height={20}
             />
-            Liked Posts
+            Понравившиеся
           </Link>
         </div>
       )}

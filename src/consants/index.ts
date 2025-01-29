@@ -2,27 +2,27 @@ export const sidebarLinks = [
     {
       imgURL: "/assets/icons/home.svg",
       route: "/",
-      label: "Home",
+      label: "Главная",
     },
     {
       imgURL: "/assets/icons/wallpaper.svg",
       route: "/explore",
-      label: "Explore",
+      label: "Популярное",
     },
     {
       imgURL: "/assets/icons/people.svg",
       route: "/all-users",
-      label: "People",
+      label: "Люди",
     },
     {
       imgURL: "/assets/icons/bookmark.svg",
       route: "/saved",
-      label: "Saved",
+      label: "Сохраненные",
     },
     {
       imgURL: "/assets/icons/gallery-add.svg",
       route: "/create-post",
-      label: "Create Post",
+      label: "Создать публикацию",
     },
   ];
   
@@ -30,21 +30,21 @@ export const sidebarLinks = [
     {
       imgURL: "/assets/icons/home.svg",
       route: "/",
-      label: "Home",
+      label: "Главная",
     },
     {
       imgURL: "/assets/icons/wallpaper.svg",
       route: "/explore",
-      label: "Explore",
+      label: "Популярное",
     },
     {
       imgURL: "/assets/icons/bookmark.svg",
       route: "/saved",
-      label: "Saved",
+      label: "Сохраненные",
     },
     {
       imgURL: "/assets/icons/gallery-add.svg",
       route: "/create-post",
-      label: "Create",
+      label: "Создать",
     },
   ];

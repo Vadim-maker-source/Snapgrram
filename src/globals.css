@@ -249,6 +249,14 @@
 @layer components {
   /* SHADCN COMPONENTS */
   /* Form */
+  .w-50{
+    width: 392%;
+  }
+
+  .w-40{
+    width: 250%;
+  }
+
   .shad-form_label {
     @apply text-white !important;
   }

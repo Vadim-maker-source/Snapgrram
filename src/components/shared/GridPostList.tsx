@@ -25,7 +25,7 @@ const GridPostList = ({ posts, showUser = true, showStats = true }: GridPostList
                             />
                         ) : (
                             <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                                <span>No Image</span>
+                                <span>Нет фотографии</span>
                             </div>
                         )}
                     </Link>
@@ -36,13 +36,13 @@ const GridPostList = ({ posts, showUser = true, showStats = true }: GridPostList
                                 {post.creator.imageUrl ? (
                                     <img
                                         src={post.creator.imageUrl}
-                                        alt="Creator"
+                                        alt="Создатель"
                                         className="h-8 w-8 rounded-full"
                                     />
                                 ) : (
                                     <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
                                 )}
-                                <p>{post.creator.name || 'Unknown User'}</p>
+                                <p>{post.creator.name || 'Неизвестен'}</p>
                             </div>
                         )}
                         {showStats && <PostStats post={post} userId={user.id} />}

@@ -1,7 +1,7 @@
 import { ID, ImageGravity, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
-import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
+import { IUpdatePost, INewPost, INewUser, IUpdateUser, INewComment } from "@/types";
 
 // ============================================================
 // AUTH
@@ -100,6 +100,66 @@ export async function signOutAccount() {
   }
 }
 
+export async function uploadFile(file: File){
+  try {
+    const uploadedFile = await storage.createFile(
+      appwriteConfig.storageId,
+      ID.unique(),
+      file
+    );
+
+    return uploadedFile;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export function getFilePreview(fileId: string){
+  try {
+    const fileUrl = storage.getFilePreview(
+      appwriteConfig.storageId,
+      fileId,
+      2000,
+      2000,
+      ImageGravity.Top,
+      100
+    );
+
+    return fileUrl;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteFile(fileId: string){
+  try {
+    await storage.deleteFile(appwriteConfig.storageId, fileId);
+
+    return { status: 'ok' }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function likePost(postId: string, likesArray: string[]){
+  try {
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId,
+      {
+        likes: likesArray
+      }
+    )
+
+    if(!updatedPost) throw Error;
+
+    return updatedPost
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export async function createPost(post: INewPost) {
   try {
     const uploadedFile = await uploadFile(post.file[0]);
@@ -147,44 +207,44 @@ export async function createPost(post: INewPost) {
   }
 }
 
-export async function uploadFile(file: File){
+export async function addComment(postId: string, userId: string, comment: INewComment) {
   try {
-    const uploadedFile = await storage.createFile(
-      appwriteConfig.storageId,
-      ID.unique(),
-      file
+
+    const newComment = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      ID.unique(),  // ID уникального комментария
+      {
+        comment: comment.textComment,
+        post: postId,
+        user: userId,
+        creator: comment.userId
+      }
     );
 
-    return uploadedFile;
+    if (!newComment) throw Error('Failed to add comment');
+
+    return newComment;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    throw error;
   }
 }
 
-export function getFilePreview(fileId: string){
+export async function deleteComment(commentId: string) {
   try {
-    const fileUrl = storage.getFilePreview(
-      appwriteConfig.storageId,
-      fileId,
-      2000,
-      2000,
-      ImageGravity.Top,
-      100
+    const deletedComment = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      commentId
     );
 
-    return fileUrl;
-  } catch (error) {
-    console.log(error);
-  }
-}
+    if (!deletedComment) throw Error('Failed to delete comment');
 
-export async function deleteFile(fileId: string){
-  try {
-    await storage.deleteFile(appwriteConfig.storageId, fileId);
-
-    return { status: 'ok' }
+    return deletedComment;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    throw error;
   }
 }
 
@@ -200,22 +260,22 @@ export async function getRecentPosts(){
   return posts;
 }
 
-export async function likePost(postId: string, likesArray: string[]){
+export async function getComments(postId: string) {
   try {
-    const updatedPost = await databases.updateDocument(
+    const comments = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
-      postId,
-      {
-        likes: likesArray
-      }
-    )
+      appwriteConfig.commentsCollectionId,
+      [Query.equal('post', postId)] // Добавляем фильтр для postId
+    );
 
-    if(!updatedPost) throw Error;
+    if (!comments || comments.documents.length === 0) {
+      throw new Error('No comments found for this post');
+    }
 
-    return updatedPost
+    return comments.documents;
   } catch (error) {
-    console.log(error)
+    console.error('Error fetching comments:', error);
+    throw error;
   }
 }
 
@@ -328,7 +388,6 @@ export async function updatePost(post: IUpdatePost) {
   }
 }
 
-
 export async function deletePost(postId: string, imageId: string){
   if(!postId || !imageId) throw Error;
 
@@ -372,7 +431,6 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
     throw error;
   }
 }
-
 
 export async function searchPosts(searchTerm: string){
   try {

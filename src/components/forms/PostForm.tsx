@@ -16,7 +16,7 @@ import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutati
 
 type PostFormProps = {
     post?: Models.Document;
-    action: 'Create' | 'Update';
+    action: 'Создать' | 'Обновить';
 }
 
 const PostForm = ({ post, action }: PostFormProps) => {
@@ -40,7 +40,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
      
       // 2. Define a submit handler.
       async function onSubmit(values: z.infer<typeof PostValidation>) {
-        if(post && action === 'Update'){
+        if(post && action === 'Обновить'){
           const updatedPost = await updatePost({
             ...values,
             postId: post.$id,
@@ -75,7 +75,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="caption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">Описание</FormLabel>
               <FormControl>
                 <Textarea className="shad-textarea custom-scrollbar" {...field} />
               </FormControl>
@@ -89,7 +89,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="file"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Photo</FormLabel>
+              <FormLabel className="shad-form_label">Добавьте фото</FormLabel>
               <FormControl>
                 <FileUploader fieldChange={field.onChange} mediaUrl={post?.imageUrl} />
               </FormControl>
@@ -103,7 +103,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Location</FormLabel>
+              <FormLabel className="shad-form_label">Добавьте локацию</FormLabel>
               <FormControl>
                 <Input type="text" className="shad-input" {...field} />
               </FormControl>
@@ -117,7 +117,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Tags(separated by comma " , ")</FormLabel>
+              <FormLabel className="shad-form_label">Добавьте теги (разделите с помощью " , ")</FormLabel>
               <FormControl>
                 <Input type="text" className="shad-input" placeholder="Art, Expression, Learn" {...field} />
               </FormControl>
@@ -127,8 +127,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
 
         <div className="flex gap-4 items-center justify-end">
-            <Button type="button" className="shad-button_dark_4">Cancel</Button>
-            <Button type="submit" className="shad-button_primary whitespace-nowrap" disabled={isLoadingCreate || isLoadingUpdate}>{isLoadingCreate || isLoadingUpdate && 'Loading...'} {action} Post</Button>
+            <Button type="button" className="shad-button_dark_4">Отмена</Button>
+            <Button type="submit" className="shad-button_primary whitespace-nowrap" disabled={isLoadingCreate || isLoadingUpdate}>{isLoadingCreate || isLoadingUpdate && 'Loading...'} {action} публикацию</Button>
         </div>
 
       </form>
