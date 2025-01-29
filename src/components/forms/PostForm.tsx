@@ -16,7 +16,7 @@ import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutati
 
 type PostFormProps = {
     post?: Models.Document;
-    action: 'Создать' | 'Обновить';
+    action: 'Create' | 'Update';
 }
 
 const PostForm = ({ post, action }: PostFormProps) => {
@@ -40,7 +40,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
      
       // 2. Define a submit handler.
       async function onSubmit(values: z.infer<typeof PostValidation>) {
-        if(post && action === 'Обновить'){
+        if(post && action === 'Update'){
           const updatedPost = await updatePost({
             ...values,
             postId: post.$id,
