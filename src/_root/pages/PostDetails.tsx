@@ -6,7 +6,8 @@ import { useDeletePost, useGetPostById, useAddComment, useGetComments, useDelete
 import { multiFormatDateString } from "@/lib/utils";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
+//import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 const PostDetails = () => {
     const { id } = useParams();
@@ -121,16 +122,18 @@ const PostDetails = () => {
 
                     {/* Контейнер с комментариями и формой для добавления комментариев */}
                     <div className="mt-4 w-full px-4">
+                        <div className="flex items-center gap-3">
                         {/* Форма для добавления комментариев */}
-                        <Textarea
+                        <Input
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="Добавьте комментарий..."
-                            className="shad-textarea custom-scrollbar"
+                            className="shad-input custom-scrollbar"
                         />
-                        <Button onClick={handleAddComment} disabled={!newComment.trim()} className="mt-2 w-full">
-                            Добавить комментарий
-                        </Button>
+                        <button onClick={handleAddComment} disabled={!newComment.trim()} className="cursor-pointer send-button">
+                            <img src="/assets/icons/send.svg" height={30} width={40} className="text-light-4 w-full h-full cursor-pointer" alt="" />
+                        </button>
+                        </div>
 
                         {/* Список комментариев */}
                         <div className="overflow-hidden mt-4">

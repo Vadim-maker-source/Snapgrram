@@ -2,6 +2,7 @@ import { ID, ImageGravity, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, storage, avatars } from "./config";
 import { IUpdatePost, INewPost, INewUser, IUpdateUser, INewComment } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 // ============================================================
 // AUTH
@@ -62,7 +63,7 @@ export async function saveUserToDB(user: {
 export async function signInAccount(user: { email: string; password: string; }) {
   try {
     const session = await account.createEmailPasswordSession(user.email, user.password);
-
+    console.log("Session:", session);
     return session;
   } catch (error) {
     console.log(error);
@@ -83,10 +84,24 @@ export async function getCurrentUser() {
     );
 
     if (!currentUser) throw Error;
+    if (!currentAccount) signOutAccount();
 
     return currentUser.documents[0];
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function handleAuthError(error: any) {
+  const navigate = useNavigate();
+
+  if (error?.code === 401) {
+    try {
+      await account.deleteSession("current"); // Удаляем текущую сессию
+      navigate("/sign-in"); // Перенаправляем на страницу входа
+    } catch (err) {
+      console.error("Ошибка при удалении сессии:", err);
+    }
   }
 }
 

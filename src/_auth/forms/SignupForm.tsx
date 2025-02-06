@@ -14,6 +14,7 @@ import { z } from "zod"
 import { Loader } from "lucide-react"
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations"
 import { useUserContext } from "@/context/AuthContext"
+import { handleAuthError } from "@/lib/appwrite/api"
 
 const SignupForm = () => {
 
@@ -66,6 +67,7 @@ const SignupForm = () => {
         toast({ title: "Ошибка при регистрации" });
       }
     } catch (error) {
+      handleAuthError(error);
       console.error(error);
       toast({ title: "Произошла ошибка. Попробуйте еще раз." });
     }

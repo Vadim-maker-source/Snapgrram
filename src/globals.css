@@ -95,6 +95,18 @@
     border-radius: 2px;
   }
 
+  .send-button{
+    border-radius: 5px;
+    padding: 6px;
+    transition: all 0.4s;
+    height: 45px;
+    width: 60px;
+  }
+
+  /* .send-button:hover{
+    background: #8f8f8fc2;
+  } */
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: #09090a;
   }
